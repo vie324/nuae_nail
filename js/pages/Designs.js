@@ -99,14 +99,14 @@ window.NUAE = window.NUAE || {};
   };
 
   const PALETTES = [
-    'linear-gradient(135deg,#fde2e4,#fad2e1,#ffccd5)',
-    'linear-gradient(135deg,#ffe4ec,#fb9fb8,#e94572)',
-    'linear-gradient(135deg,#ffffff,#f8fafc,#e2e8f0)',
-    'linear-gradient(135deg,#a78bfa,#60a5fa,#34d399)',
-    'linear-gradient(135deg,#ffffff,#fef3c7,#fde68a)',
-    'linear-gradient(135deg,#67e8f9,#60a5fa,#818cf8)',
-    'linear-gradient(135deg,#fde68a,#fcd34d,#d6bcfa)',
-    'linear-gradient(135deg,#fca5a5,#f87171,#7f1d1d)'
+    'linear-gradient(135deg,#f3e7e2,#e8d2c8,#d6b5a7)',   // smoky rose — light
+    'linear-gradient(135deg,#d6b5a7,#b08c80,#967060)',   // smoky rose — full
+    'linear-gradient(135deg,#ffffff,#f3e7e2,#e8d2c8)',   // nude cream
+    'linear-gradient(135deg,#cfa46c,#b78a54,#9b7340)',   // warm gold
+    'linear-gradient(135deg,#ffffff,#fef3c7,#fde68a)',   // bridal
+    'linear-gradient(135deg,#a78bfa,#60a5fa,#34d399)',   // aurora
+    'linear-gradient(135deg,#fde68a,#fcd34d,#d6bcfa)',   // sunset
+    'linear-gradient(135deg,#fca5a5,#f87171,#7f1d1d)'    // red
   ];
 
   const DesignModal = ({ open, onClose, editing, onSave, onDelete }) => {

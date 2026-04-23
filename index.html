@@ -5,23 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nuae Nail - Salon Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%85%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400;1,500&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
+            // SMOKY ROSE — Nuae brand primary (#B08C80)
             brand: {
-              50:  '#fff5f8',
-              100: '#ffe4ec',
-              200: '#fecdd8',
-              300: '#fb9fb8',
-              400: '#f56a91',
-              500: '#e94572',
-              600: '#cc2e5b',
-              700: '#a8234a',
-              800: '#8a1f40',
-              900: '#6b1833'
+              50:  '#faf5f3',
+              100: '#f3e7e2',
+              200: '#e8d2c8',
+              300: '#d6b5a7',
+              400: '#c39d8e',
+              500: '#b08c80',
+              600: '#967060',
+              700: '#7a5a4e',
+              800: '#5e4439',
+              900: '#3f2d26'
+            },
+            // Subtle gold accent (from the brand underline)
+            gold: {
+              400: '#cfa46c',
+              500: '#b78a54',
+              600: '#9b7340'
             }
           },
           fontFamily: {
@@ -38,6 +48,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased">
+  <!-- Splash screen (shown instantly, before React hydrates) -->
+  <div id="splash" aria-hidden="true">
+    <div class="splash-wrap">
+      <img src="assets/logo.svg" alt="Nuae" class="splash-img" />
+      <div class="splash-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+    <div class="splash-glow splash-glow-1"></div>
+    <div class="splash-glow splash-glow-2"></div>
+  </div>
+
   <div id="root"></div>
 
   <script type="text/babel" src="js/data.js"></script>

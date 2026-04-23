@@ -45,7 +45,7 @@ window.NUAE = window.NUAE || {};
 
           <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200/60">
             <div className="relative">
-              <div className="w-9 h-9 rounded-full aurora-bg text-white flex items-center justify-center font-semibold shadow-[0_6px_16px_-6px_rgba(233,69,114,.5)]">M</div>
+              <div className="w-9 h-9 rounded-full aurora-bg text-white flex items-center justify-center font-semibold shadow-[0_6px_16px_-6px_rgba(176,140,128,.55)]">M</div>
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white" />
             </div>
             <div className="text-sm hidden md:block leading-tight">

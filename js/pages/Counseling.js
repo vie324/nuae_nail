@@ -116,7 +116,7 @@ window.NUAE = window.NUAE || {};
             <Button variant="ghost" disabled={step === 0} onClick={() => setStep(step - 1)}>戻る</Button>
             <div className="flex items-center gap-3">
               <div className="w-40 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-brand-400 to-rose-500 transition-[width] duration-500" style={{ width: progress + '%' }} />
+                <div className="h-full bg-gradient-to-r from-brand-400 to-brand-600 transition-[width] duration-500" style={{ width: progress + '%' }} />
               </div>
               {step < totalSteps - 1
                 ? <Button onClick={() => setStep(step + 1)} iconRight={<Icons.ChevronRight size={14} />}>次へ</Button>
@@ -152,7 +152,7 @@ window.NUAE = window.NUAE || {};
                   <div className="flex flex-wrap gap-2">
                     {q.options.map((o) => (
                       <button key={o} onClick={() => setAnswers({ ...answers, [i]: o })}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all press ${answers[i] === o ? 'bg-gradient-to-r from-brand-500 to-rose-500 text-white shadow-md' : 'bg-white border border-slate-200 hover:border-brand-300'}`}>
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all press ${answers[i] === o ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md' : 'bg-white border border-slate-200 hover:border-brand-300'}`}>
                         {o}
                       </button>
                     ))}
@@ -167,7 +167,7 @@ window.NUAE = window.NUAE || {};
                             const cur = answers[i] || [];
                             setAnswers({ ...answers, [i]: checked ? cur.filter((x) => x !== o) : [...cur, o] });
                           }}
-                          className={`inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm cursor-pointer transition-all press ${checked ? 'bg-gradient-to-r from-brand-500 to-rose-500 text-white shadow-md' : 'bg-white border border-slate-200 hover:border-brand-300'}`}>
+                          className={`inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm cursor-pointer transition-all press ${checked ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md' : 'bg-white border border-slate-200 hover:border-brand-300'}`}>
                           {checked && <Icons.Check size={14} />} {o}
                         </button>
                       );

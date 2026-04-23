@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" width="72" height="72" role="img" aria-label="Nuae">
+  <defs>
+    <style type="text/css"><![CDATA[
+      .mark {
+        font-family: 'Playfair Display', 'Didot', 'Bodoni 72', 'Palatino Linotype', Palatino, 'Hoefler Text', 'Times New Roman', serif;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 54px;
+        fill: #b08c80;
+      }
+    ]]></style>
+  </defs>
+  <text class="mark" x="36" y="50" text-anchor="middle">N</text>
+  <line x1="12" y1="62" x2="60" y2="62" stroke="#b78a54" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

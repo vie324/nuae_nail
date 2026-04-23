@@ -246,7 +246,7 @@ window.NUAE = window.NUAE || {};
               { value: 'risk', label: '離脱リスク (87名)' },
               { value: '30d',  label: '30日以内来店 (200名)' }
             ]} />
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-rose-50 text-brand-700 flex items-center gap-3">
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-brand-100 text-brand-700 flex items-center gap-3">
             <div className="text-3xl">📣</div>
             <div>
               <div className="font-bold text-lg">約 {count} 名</div>

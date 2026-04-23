@@ -21,18 +21,17 @@ window.NUAE = window.NUAE || {};
     return (
       <aside className={`${collapsed ? 'w-20' : 'w-64'} shrink-0 h-screen sticky top-0 glass border-r border-white/40 flex flex-col transition-[width] duration-300 ease-out z-30`}>
         {/* Brand */}
-        <div className="px-5 py-5 flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-2xl aurora-bg flex items-center justify-center text-white font-bold shadow-[0_8px_22px_-6px_rgba(233,69,114,.55)]">
-              <span className="drop-shadow-sm">N</span>
+        <div className={`px-5 py-5 flex items-center ${collapsed ? 'justify-center' : 'gap-3'}`}>
+          {collapsed ? (
+            <div className="relative">
+              <img src="assets/logo-mark.svg" alt="Nuae" className="w-10 h-10 drop-shadow-sm" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-white glow-pulse" />
             </div>
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-white glow-pulse" />
-          </div>
-          {!collapsed && (
-            <div className="leading-tight">
-              <div className="font-bold text-slate-800 tracking-tight text-[15px]">Nuae Nail</div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Salon OS</div>
-            </div>
+          ) : (
+            <>
+              <img src="assets/logo.svg" alt="Nuae" className="h-10 w-auto" />
+              <span className="ml-1 w-2 h-2 rounded-full bg-emerald-400 glow-pulse shrink-0" />
+            </>
           )}
         </div>
 
@@ -44,7 +43,7 @@ window.NUAE = window.NUAE || {};
               <button key={n.id} onClick={() => onNavigate(n.id)}
                 className={`nav-item ${active ? 'is-active' : ''}
                   w-full group flex items-center gap-3 px-3 py-2.5 my-0.5 rounded-xl text-sm
-                  ${active ? 'bg-gradient-to-r from-brand-50 to-rose-50/40 text-brand-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}>
+                  ${active ? 'bg-gradient-to-r from-brand-50 to-brand-100/50 text-brand-700 font-semibold' : 'text-slate-600 hover:bg-slate-50'}`}>
                 <span className="nav-rail" />
                 <span className={`nav-icon ${active ? 'text-brand-500' : 'text-slate-400 group-hover:text-brand-400'}`}>{n.icon}</span>
                 {!collapsed && <span className="truncate">{n.label}</span>}
@@ -61,7 +60,7 @@ window.NUAE = window.NUAE || {};
         {/* Upgrade / collapse */}
         <div className="p-3 border-t border-slate-100/70 space-y-2">
           {!collapsed && (
-            <div className="relative p-3 rounded-2xl overflow-hidden text-white aurora-bg shadow-[0_10px_30px_-10px_rgba(233,69,114,.5)]">
+            <div className="relative p-3 rounded-2xl overflow-hidden text-white aurora-bg shadow-[0_10px_30px_-10px_rgba(176,140,128,.55)]">
               <div className="relative z-10">
                 <div className="text-xs font-semibold">✨ Pro プラン</div>
                 <div className="text-[10px] opacity-90 mt-0.5">AIコンシェルジュでさらに効率化</div>
