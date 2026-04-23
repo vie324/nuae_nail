@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuae Nail - Salon Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%85%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#fff5f8',
+              100: '#ffe4ec',
+              200: '#fecdd8',
+              300: '#fb9fb8',
+              400: '#f56a91',
+              500: '#e94572',
+              600: '#cc2e5b',
+              700: '#a8234a',
+              800: '#8a1f40',
+              900: '#6b1833'
+            }
+          },
+          fontFamily: {
+            sans: ['"Hiragino Kaku Gothic ProN"', '"Noto Sans JP"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased">
+  <div id="root"></div>
 
+  <script type="text/babel" src="js/data.js"></script>
+  <script type="text/babel" src="js/components/Icons.js"></script>
+  <script type="text/babel" src="js/components/UI.js"></script>
+  <script type="text/babel" src="js/components/Sidebar.js"></script>
+  <script type="text/babel" src="js/components/Header.js"></script>
+  <script type="text/babel" src="js/pages/Dashboard.js"></script>
+  <script type="text/babel" src="js/pages/Reservations.js"></script>
+  <script type="text/babel" src="js/pages/Customers.js"></script>
+  <script type="text/babel" src="js/pages/Designs.js"></script>
+  <script type="text/babel" src="js/pages/Line.js"></script>
+  <script type="text/babel" src="js/pages/Shifts.js"></script>
+  <script type="text/babel" src="js/pages/Staff.js"></script>
+  <script type="text/babel" src="js/pages/Marketing.js"></script>
+  <script type="text/babel" src="js/pages/Integrations.js"></script>
+  <script type="text/babel" src="js/pages/Counseling.js"></script>
+  <script type="text/babel" src="js/app.js"></script>
+</body>
+</html>
