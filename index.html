@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nuae Nail - Salon Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%85%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400;1,500&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -38,6 +41,20 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased">
+  <!-- Splash screen (shown instantly, before React hydrates) -->
+  <div id="splash" aria-hidden="true">
+    <div class="splash-wrap">
+      <div class="splash-logo" aria-label="Nuae">
+        <span style="--i:0">N</span><span style="--i:1">u</span><span style="--i:2">a</span><span style="--i:3">e</span>
+      </div>
+      <div class="splash-line"></div>
+      <div class="splash-est">EST.&nbsp;&nbsp;2026</div>
+      <div class="splash-loader" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+    <div class="splash-glow splash-glow-1"></div>
+    <div class="splash-glow splash-glow-2"></div>
+  </div>
+
   <div id="root"></div>
 
   <script type="text/babel" src="js/data.js"></script>
