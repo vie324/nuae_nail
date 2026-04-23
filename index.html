@@ -14,17 +14,24 @@
       theme: {
         extend: {
           colors: {
+            // SMOKY ROSE — Nuae brand primary (#B08C80)
             brand: {
-              50:  '#fff5f8',
-              100: '#ffe4ec',
-              200: '#fecdd8',
-              300: '#fb9fb8',
-              400: '#f56a91',
-              500: '#e94572',
-              600: '#cc2e5b',
-              700: '#a8234a',
-              800: '#8a1f40',
-              900: '#6b1833'
+              50:  '#faf5f3',
+              100: '#f3e7e2',
+              200: '#e8d2c8',
+              300: '#d6b5a7',
+              400: '#c39d8e',
+              500: '#b08c80',
+              600: '#967060',
+              700: '#7a5a4e',
+              800: '#5e4439',
+              900: '#3f2d26'
+            },
+            // Subtle gold accent (from the brand underline)
+            gold: {
+              400: '#cfa46c',
+              500: '#b78a54',
+              600: '#9b7340'
             }
           },
           fontFamily: {
@@ -44,11 +51,7 @@
   <!-- Splash screen (shown instantly, before React hydrates) -->
   <div id="splash" aria-hidden="true">
     <div class="splash-wrap">
-      <div class="splash-logo" aria-label="Nuae">
-        <span style="--i:0">N</span><span style="--i:1">u</span><span style="--i:2">a</span><span style="--i:3">e</span>
-      </div>
-      <div class="splash-line"></div>
-      <div class="splash-est">EST.&nbsp;&nbsp;2026</div>
+      <img src="assets/logo.svg" alt="Nuae" class="splash-img" />
       <div class="splash-loader" aria-hidden="true"><span></span><span></span><span></span></div>
     </div>
     <div class="splash-glow splash-glow-1"></div>

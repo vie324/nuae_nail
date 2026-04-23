@@ -39,7 +39,7 @@ window.NUAE = window.NUAE || {};
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 stagger-children">
             {data.staff.map((s) => (
               <button key={s.id} onClick={() => setSelectedStaff(s)}
-                className={`p-3 rounded-2xl text-left transition-all press hover-lift ${selectedStaff.id === s.id ? 'bg-gradient-to-br from-brand-50 to-rose-50 ring-2 ring-brand-300' : 'bg-white border border-slate-200 hover:border-brand-200'}`}>
+                className={`p-3 rounded-2xl text-left transition-all press hover-lift ${selectedStaff.id === s.id ? 'bg-gradient-to-br from-brand-50 to-brand-100 ring-2 ring-brand-300' : 'bg-white border border-slate-200 hover:border-brand-200'}`}>
                 <div className="flex items-center gap-2">
                   <div className="relative">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-sm" style={{ background: `linear-gradient(135deg, ${s.color}44, ${s.color}22)` }}>{s.avatar}</div>
@@ -68,7 +68,7 @@ window.NUAE = window.NUAE || {};
           <div className="p-6 bg-gradient-to-br from-slate-50 to-brand-50/30">
             <div className="flex items-center gap-4 mb-6 flex-wrap">
               <div className="relative">
-                <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl shadow-[0_12px_30px_-10px_rgba(233,69,114,.4)]" style={{ background: `linear-gradient(135deg, ${selectedStaff.color}55, ${selectedStaff.color}22)` }}>{selectedStaff.avatar}</div>
+                <div className="w-16 h-16 rounded-3xl flex items-center justify-center text-3xl shadow-[0_12px_30px_-10px_rgba(176,140,128,.45)]" style={{ background: `linear-gradient(135deg, ${selectedStaff.color}55, ${selectedStaff.color}22)` }}>{selectedStaff.avatar}</div>
                 <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-brand-600 shadow-sm">MVP</span>
               </div>
               <div className="flex-1">
@@ -128,7 +128,7 @@ window.NUAE = window.NUAE || {};
                   <div className="flex-1 space-y-2">
                     <PerfRow label="リピート率"    value={78} color="#10b981" />
                     <PerfRow label="カウンセリング" value={64} color="#8b5cf6" />
-                    <PerfRow label="顧客満足度"    value={92} color="#e94572" />
+                    <PerfRow label="顧客満足度"    value={92} color="#b08c80" />
                   </div>
                 </div>
               </Card>

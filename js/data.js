@@ -11,7 +11,7 @@ window.NUAE = window.NUAE || {};
   };
 
   const staff = [
-    { id: 's1', name: '田中 美咲',   role: 'オーナー/ネイリスト', color: '#e94572', avatar: '👩🏻‍🎨', line: true,  email: 'misaki@nuae.jp',  specialty: ['ジェル', 'アート'] },
+    { id: 's1', name: '田中 美咲',   role: 'オーナー/ネイリスト', color: '#b08c80', avatar: '👩🏻‍🎨', line: true,  email: 'misaki@nuae.jp',  specialty: ['ジェル', 'アート'] },
     { id: 's2', name: '佐藤 ゆい',   role: 'シニアネイリスト',   color: '#f59e0b', avatar: '💇🏻‍♀️', line: true,  email: 'yui@nuae.jp',      specialty: ['フレンチ', 'ワンカラー'] },
     { id: 's3', name: '鈴木 あかり', role: 'ネイリスト',         color: '#8b5cf6', avatar: '👩🏻', line: true,  email: 'akari@nuae.jp',    specialty: ['マグネット', 'ニュアンス'] },
     { id: 's4', name: '高橋 りな',   role: 'アシスタント',       color: '#14b8a6', avatar: '👩🏻‍🦰', line: false, email: 'rina@nuae.jp',     specialty: ['オフ', 'ケア'] }
@@ -37,8 +37,8 @@ window.NUAE = window.NUAE || {};
   ];
 
   const designs = [
-    { id: 'd1', name: 'ニュアンスミルキー',   category: 'ニュアンス', season: '春', price: 11000, likes: 128, image: 'linear-gradient(135deg,#fde2e4,#fad2e1,#ffccd5)', tags: ['人気', '春夏'] },
-    { id: 'd2', name: 'ワンホンガーリー',     category: 'アート',     season: '通年', price: 13200, likes: 98,  image: 'linear-gradient(135deg,#ffe4ec,#fb9fb8,#e94572)', tags: ['SNS映え'] },
+    { id: 'd1', name: 'ニュアンスミルキー',   category: 'ニュアンス', season: '春', price: 11000, likes: 128, image: 'linear-gradient(135deg,#f3e7e2,#e8d2c8,#d6b5a7)', tags: ['人気', '春夏'] },
+    { id: 'd2', name: 'スモーキーローズ',     category: 'アート',     season: '通年', price: 13200, likes: 98,  image: 'linear-gradient(135deg,#d6b5a7,#b08c80,#967060)', tags: ['SNS映え', '定番'] },
     { id: 'd3', name: 'シンプルフレンチ',     category: 'フレンチ',   season: '通年', price: 7700,  likes: 210, image: 'linear-gradient(135deg,#ffffff,#f8fafc,#e2e8f0)', tags: ['オフィス', '定番'] },
     { id: 'd4', name: 'マグネットオーロラ',   category: 'マグネット', season: '秋冬', price: 9900,  likes: 156, image: 'linear-gradient(135deg,#a78bfa,#60a5fa,#34d399)', tags: ['人気'] },
     { id: 'd5', name: 'ブライダルホワイト',   category: 'ブライダル', season: '通年', price: 16500, likes: 64,  image: 'linear-gradient(135deg,#ffffff,#fef3c7,#fde68a)', tags: ['ブライダル'] },

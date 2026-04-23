@@ -111,11 +111,12 @@ window.NUAE = window.NUAE || {};
     const display = typeof numeric === 'number' ? `${prefix}${count.toLocaleString()}${suffix}` : value;
 
     const toneMap = {
-      brand:   'from-rose-50 to-pink-50 text-brand-500',
+      brand:   'from-brand-50 to-brand-100 text-brand-600',
       violet:  'from-violet-50 to-fuchsia-50 text-violet-500',
       sky:     'from-sky-50 to-cyan-50 text-sky-500',
-      amber:   'from-amber-50 to-orange-50 text-amber-500',
-      emerald: 'from-emerald-50 to-teal-50 text-emerald-500'
+      amber:   'from-amber-50 to-orange-50 text-amber-600',
+      emerald: 'from-emerald-50 to-teal-50 text-emerald-500',
+      gold:    'from-amber-50 to-yellow-50 text-amber-700'
     };
 
     return (
@@ -153,8 +154,8 @@ window.NUAE = window.NUAE || {};
       violet:  'bg-violet-100 text-violet-700'
     };
     const dotColor = {
-      slate: '#94a3b8', brand: '#e94572', green: '#10b981',
-      amber: '#f59e0b', rose: '#f43f5e', blue: '#0ea5e9', violet: '#8b5cf6'
+      slate: '#94a3b8', brand: '#b08c80', green: '#10b981',
+      amber: '#b78a54', rose: '#c39d8e', blue: '#0ea5e9', violet: '#8b5cf6'
     }[tone] || '#94a3b8';
     return (
       <span className={`pill ${tones[tone] || tones.slate}`}>
@@ -185,9 +186,9 @@ window.NUAE = window.NUAE || {};
     const base = 'ripple press inline-flex items-center justify-center gap-1.5 font-medium rounded-xl transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
     const sizes = { sm: 'text-xs px-3 py-1.5', md: 'text-sm px-4 py-2', lg: 'text-base px-5 py-2.5' };
     const variants = {
-      primary:   'btn-primary-shine text-white bg-gradient-to-r from-brand-500 to-rose-500 hover:from-brand-600 hover:to-rose-600 shadow-[0_6px_18px_-6px_rgba(233,69,114,.55)]',
-      secondary: 'bg-white border border-slate-200 text-slate-700 hover:border-brand-200 hover:text-brand-600 hover:bg-brand-50/40 shadow-sm',
-      ghost:     'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+      primary:   'btn-primary-shine text-white bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 shadow-[0_6px_18px_-6px_rgba(176,140,128,.6)]',
+      secondary: 'bg-white border border-slate-200 text-slate-700 hover:border-brand-300 hover:text-brand-700 hover:bg-brand-50/50 shadow-sm',
+      ghost:     'text-slate-600 hover:bg-brand-50 hover:text-brand-700',
       danger:    'bg-gradient-to-r from-rose-500 to-rose-600 text-white hover:from-rose-600 hover:to-rose-700 shadow-[0_6px_18px_-6px_rgba(244,63,94,.55)]',
       subtle:    'bg-brand-50 text-brand-700 hover:bg-brand-100'
     };
@@ -312,7 +313,7 @@ window.NUAE = window.NUAE || {};
 
   /* ─── Progress Ring ─────────────────────────────────── */
 
-  const Ring = ({ value, size = 64, stroke = 6, color = '#e94572', label }) => {
+  const Ring = ({ value, size = 64, stroke = 6, color = '#b08c80', label }) => {
     const r = (size - stroke) / 2;
     const c = 2 * Math.PI * r;
     const off = c * (1 - Math.max(0, Math.min(1, value / 100)));
@@ -337,7 +338,7 @@ window.NUAE = window.NUAE || {};
   const EmptyState = ({ title, description, icon, action }) => (
     <div className="text-center py-14 px-6">
       <div className="relative inline-flex w-16 h-16 mb-4">
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-100 to-pink-100" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-100 to-brand-200" />
         <div className="relative w-full h-full rounded-2xl flex items-center justify-center text-brand-500">{icon}</div>
       </div>
       <div className="font-semibold text-slate-800">{title}</div>

@@ -58,7 +58,7 @@ window.NUAE = window.NUAE || {};
 
           <div className="relative mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 stagger-children">
             <MiniBox label="接続済み" value={`${connected}/${integrations.length}`} gradient="from-emerald-500 to-teal-500" />
-            <MiniBox label="新着予約" value={`${newTotal}件`}                        gradient="from-brand-500 to-rose-500" />
+            <MiniBox label="新着予約" value={`${newTotal}件`}                        gradient="from-brand-500 to-brand-600" />
             <MiniBox label="未確定"   value={`${pendingTot}件`}                      gradient="from-amber-500 to-orange-500" />
             <MiniBox label="最終同期" value="9:30"                                    gradient="from-slate-500 to-slate-700" />
           </div>

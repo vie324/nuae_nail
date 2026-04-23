@@ -6,7 +6,8 @@ window.NUAE = window.NUAE || {};
   const { Card, Badge, Button, Modal, Input, Select, Textarea, SegmentedTabs, Ring, useToast } = UI;
 
   const gradientFor = (name) => {
-    const seeds = ['#fb9fb8', '#e94572', '#a78bfa', '#60a5fa', '#f59e0b', '#14b8a6', '#f472b6', '#6ee7b7'];
+    // smoky-rose accented palette: primary brand + complementary warm/cool tones
+    const seeds = ['#b08c80', '#c39d8e', '#967060', '#b78a54', '#d6b5a7', '#a89182', '#8b7468', '#cfa46c'];
     const h = Array.from(name || '').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const a = seeds[h % seeds.length];
     const b = seeds[(h + 3) % seeds.length];
@@ -111,7 +112,7 @@ window.NUAE = window.NUAE || {};
               <Card>
                 <div className="py-12 text-center">
                   <div className="relative inline-block">
-                    <div className="w-20 h-20 rounded-3xl aurora-bg flex items-center justify-center text-white shadow-[0_12px_30px_-10px_rgba(233,69,114,.5)]">
+                    <div className="w-20 h-20 rounded-3xl aurora-bg flex items-center justify-center text-white shadow-[0_12px_30px_-10px_rgba(176,140,128,.55)]">
                       <Icons.Users size={28} />
                     </div>
                     <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 ring-2 ring-white glow-pulse" />
@@ -161,7 +162,7 @@ window.NUAE = window.NUAE || {};
           </div>
 
           <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-brand-50 to-rose-50 text-center">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 text-center">
               <div className="text-[10px] text-slate-500 uppercase">来店</div>
               <div className="font-bold text-slate-800 text-lg">{customer.visits}</div>
             </div>

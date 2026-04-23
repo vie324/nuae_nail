@@ -27,14 +27,14 @@ window.NUAE = window.NUAE || {};
       data: {
         labels: campaigns.map((c) => c.name.slice(0, 12)),
         datasets: [
-          { label: '予算', data: campaigns.map((c) => c.budget), backgroundColor: '#fecdd8', borderRadius: 8, barThickness: 16 },
-          { label: '消化', data: campaigns.map((c) => c.spent),  backgroundColor: '#e94572', borderRadius: 8, barThickness: 16 }
+          { label: '予算', data: campaigns.map((c) => c.budget), backgroundColor: '#e8d2c8', borderRadius: 8, barThickness: 16 },
+          { label: '消化', data: campaigns.map((c) => c.spent),  backgroundColor: '#b08c80', borderRadius: 8, barThickness: 16 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } } },
-        scales: { y: { grid: { color: 'rgba(148,163,184,.1)' }, ticks: { callback: (v) => '¥' + v / 1000 + 'k' } }, x: { grid: { display: false } } },
+        scales: { y: { grid: { color: 'rgba(176,140,128,.10)' }, ticks: { callback: (v) => '¥' + v / 1000 + 'k' } }, x: { grid: { display: false } } },
         animation: { duration: 1200, easing: 'easeOutCubic' }
       }
     }, [campaigns]);
@@ -44,14 +44,14 @@ window.NUAE = window.NUAE || {};
       data: {
         labels: data.weeklyRevenue.map((w) => w.week),
         datasets: [
-          { label: '新規顧客',   data: data.weeklyRevenue.map((w) => w.newCustomers),    borderColor: '#e94572', backgroundColor: 'rgba(233,69,114,.15)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0, pointHoverRadius: 6 },
-          { label: 'リピーター', data: data.weeklyRevenue.map((w) => w.repeatCustomers), borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,.15)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0, pointHoverRadius: 6 }
+          { label: '新規顧客',   data: data.weeklyRevenue.map((w) => w.newCustomers),    borderColor: '#b08c80', backgroundColor: 'rgba(176,140,128,.18)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0, pointHoverRadius: 6 },
+          { label: 'リピーター', data: data.weeklyRevenue.map((w) => w.repeatCustomers), borderColor: '#b78a54', backgroundColor: 'rgba(183,138,84,.18)',  fill: true, tension: 0.4, borderWidth: 3, pointRadius: 0, pointHoverRadius: 6 }
         ]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } } },
-        scales: { y: { grid: { color: 'rgba(148,163,184,.1)' } }, x: { grid: { display: false } } },
+        scales: { y: { grid: { color: 'rgba(176,140,128,.10)' } }, x: { grid: { display: false } } },
         animation: { duration: 1200 }
       }
     }, []);
@@ -60,7 +60,7 @@ window.NUAE = window.NUAE || {};
       type: 'doughnut',
       data: {
         labels: campaigns.map((c) => c.platform),
-        datasets: [{ data: campaigns.map((c) => c.conversions), backgroundColor: ['#e94572', '#f59e0b', '#8b5cf6', '#14b8a6', '#38bdf8'], borderWidth: 0, hoverOffset: 12 }]
+        datasets: [{ data: campaigns.map((c) => c.conversions), backgroundColor: ['#b08c80', '#b78a54', '#c39d8e', '#967060', '#d6b5a7'], borderWidth: 0, hoverOffset: 12 }]
       },
       options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } } }
     }, [campaigns]);
@@ -123,7 +123,7 @@ window.NUAE = window.NUAE || {};
                       <td className="px-4 py-3">
                         <div className="text-xs">¥{(c.spent / 1000).toFixed(0)}k / ¥{(c.budget / 1000).toFixed(0)}k</div>
                         <div className="h-2 bg-slate-100 rounded-full mt-1.5 overflow-hidden w-32">
-                          <div className="h-full rounded-full bg-gradient-to-r from-brand-400 to-rose-500 transition-[width] duration-700" style={{ width: pct + '%' }} />
+                          <div className="h-full rounded-full bg-gradient-to-r from-brand-400 to-brand-600 transition-[width] duration-700" style={{ width: pct + '%' }} />
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right text-slate-700">{c.impressions.toLocaleString()}</td>

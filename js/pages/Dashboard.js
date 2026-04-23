@@ -21,13 +21,13 @@ window.NUAE = window.NUAE || {};
         datasets: [{
           label: '売上',
           data: data.weeklyRevenue.map((w) => w.revenue),
-          borderColor: '#e94572',
+          borderColor: '#b08c80',
           backgroundColor: (ctx) => {
             const c = ctx.chart?.ctx;
-            if (!c) return 'rgba(233,69,114,0.2)';
+            if (!c) return 'rgba(176,140,128,0.22)';
             const g = c.createLinearGradient(0, 0, 0, 240);
-            g.addColorStop(0, 'rgba(233,69,114,0.35)');
-            g.addColorStop(1, 'rgba(233,69,114,0)');
+            g.addColorStop(0, 'rgba(176,140,128,0.38)');
+            g.addColorStop(1, 'rgba(176,140,128,0)');
             return g;
           },
           borderWidth: 3,
@@ -36,15 +36,15 @@ window.NUAE = window.NUAE || {};
           pointRadius: 0,
           pointHoverRadius: 6,
           pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: '#e94572',
+          pointHoverBorderColor: '#b08c80',
           pointHoverBorderWidth: 3
         }]
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 10 } },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#3f2d26', padding: 12, cornerRadius: 10 } },
         scales: {
-          y: { grid: { color: 'rgba(148,163,184,.1)' }, ticks: { callback: (v) => '¥' + (v / 1000) + 'k' } },
+          y: { grid: { color: 'rgba(176,140,128,.10)' }, ticks: { callback: (v) => '¥' + (v / 1000) + 'k' } },
           x: { grid: { display: false } }
         },
         animation: { duration: 1100, easing: 'easeOutCubic' }
@@ -57,7 +57,7 @@ window.NUAE = window.NUAE || {};
         labels: data.channels,
         datasets: [{
           data: data.channels.map((c) => data.reservations.filter((r) => r.channel === c).length + Math.floor(Math.random() * 5) + 1),
-          backgroundColor: ['#e94572', '#f59e0b', '#8b5cf6', '#14b8a6', '#64748b', '#38bdf8'],
+          backgroundColor: ['#b08c80', '#b78a54', '#c39d8e', '#967060', '#d6b5a7', '#8b7468'],
           borderWidth: 0,
           hoverOffset: 12
         }]
@@ -78,7 +78,7 @@ window.NUAE = window.NUAE || {};
     return (
       <div className="p-6 space-y-6 page-enter">
         {/* Hero */}
-        <div className="relative overflow-hidden rounded-3xl aurora-bg p-6 md:p-8 shadow-[0_20px_60px_-20px_rgba(184,76,217,.5)]">
+        <div className="relative overflow-hidden rounded-3xl aurora-bg p-6 md:p-8 shadow-[0_20px_60px_-20px_rgba(176,140,128,.55)]">
           <div className="relative z-10 flex items-start justify-between flex-wrap gap-4">
             <div className="text-white">
               <div className="text-xs uppercase tracking-[0.25em] opacity-80">おかえりなさい</div>
@@ -141,7 +141,7 @@ window.NUAE = window.NUAE || {};
                       <div className="h-4 w-px bg-slate-200 mx-auto my-0.5" />
                       <div className="text-[10px] text-slate-400">{r.end}</div>
                     </div>
-                    <div className="w-10 h-10 rounded-xl shrink-0 shadow-sm" style={{ background: d?.image || 'linear-gradient(135deg,#fde2e4,#fad2e1)' }} />
+                    <div className="w-10 h-10 rounded-xl shrink-0 shadow-sm" style={{ background: d?.image || 'linear-gradient(135deg,#f3e7e2,#e8d2c8)' }} />
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-slate-800 truncate flex items-center gap-2">
                         {c?.name}
