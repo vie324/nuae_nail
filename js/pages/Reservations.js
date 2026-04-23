@@ -1,11 +1,11 @@
-/* Reservation management */
+/* Reservation management - kinetic calendar */
 window.NUAE = window.NUAE || {};
 
 (() => {
   const { UI, Icons, data } = window.NUAE;
-  const { Card, Badge, Button, Modal, Input, Select, Textarea } = UI;
+  const { Card, Badge, Button, Modal, Input, Select, Textarea, SegmentedTabs, useToast } = UI;
 
-  const HOURS = Array.from({ length: 11 }, (_, i) => 9 + i); // 9..19
+  const HOURS = Array.from({ length: 11 }, (_, i) => 9 + i);
 
   const weekDates = (start) => {
     const s = new Date(start);
@@ -16,14 +16,17 @@ window.NUAE = window.NUAE || {};
     });
   };
 
+  const statusTone = (s) => ({ '確定': 'brand', '来店待ち': 'blue', '施術中': 'violet', '完了': 'green', 'キャンセル': 'rose' })[s] || 'slate';
+
   const Reservations = () => {
-    const [view, setView] = React.useState('week'); // week | list
+    const [view, setView] = React.useState('week');
     const [weekStart, setWeekStart] = React.useState(data.today);
     const [filterStaff, setFilterStaff] = React.useState('all');
     const [filterChannel, setFilterChannel] = React.useState('all');
     const [modalOpen, setModalOpen] = React.useState(false);
     const [editing, setEditing] = React.useState(null);
     const [reservations, setReservations] = React.useState(data.reservations);
+    const toast = useToast();
 
     const days = weekDates(weekStart);
 
@@ -43,73 +46,94 @@ window.NUAE = window.NUAE || {};
     const openEdit = (r) => { setEditing(r); setModalOpen(true); };
 
     const save = (form) => {
-      if (editing) {
+      if (editing?.id) {
         setReservations(reservations.map((r) => r.id === editing.id ? { ...r, ...form } : r));
+        toast({ tone: 'success', title: '予約を更新しました' });
       } else {
         const id = 'r' + Date.now();
         setReservations([...reservations, { id, ...form }]);
+        toast({ tone: 'success', title: '予約を作成しました', description: `${form.date} ${form.start}〜` });
       }
       setModalOpen(false);
     };
     const remove = (id) => {
       setReservations(reservations.filter((r) => r.id !== id));
       setModalOpen(false);
+      toast({ tone: 'error', title: '予約を削除しました' });
     };
 
     return (
-      <div className="p-6 space-y-4 fade-in">
-        <div className="flex flex-wrap items-center gap-2 justify-between">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-xl border border-slate-200 bg-white overflow-hidden">
-              <button className={`px-3 py-1.5 text-sm ${view === 'week' ? 'bg-brand-500 text-white' : 'text-slate-600'}`} onClick={() => setView('week')}>週表示</button>
-              <button className={`px-3 py-1.5 text-sm ${view === 'list' ? 'bg-brand-500 text-white' : 'text-slate-600'}`} onClick={() => setView('list')}>一覧</button>
-            </div>
+      <div className="p-6 space-y-4 page-enter">
+        {/* Toolbar */}
+        <div className="flex flex-wrap items-center gap-3 justify-between">
+          <div className="flex items-center gap-3 flex-wrap">
+            <SegmentedTabs value={view} onChange={setView} options={[{ value: 'week', label: '週表示' }, { value: 'list', label: '一覧' }]} />
             {view === 'week' && (
-              <div className="inline-flex items-center gap-2 bg-white rounded-xl border border-slate-200 px-2">
-                <button onClick={() => shiftWeek(-1)} className="p-1.5 text-slate-500 hover:text-slate-700"><Icons.ChevronLeft size={18} /></button>
-                <span className="text-sm font-medium">{weekStart} 〜</span>
-                <button onClick={() => shiftWeek(1)} className="p-1.5 text-slate-500 hover:text-slate-700"><Icons.ChevronRight size={18} /></button>
+              <div className="inline-flex items-center gap-1 glass rounded-xl px-1 py-1 border border-white/50">
+                <button onClick={() => shiftWeek(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-brand-600 hover:bg-brand-50 press"><Icons.ChevronLeft size={16} /></button>
+                <div className="px-3 text-sm font-semibold text-slate-700">{weekStart}</div>
+                <button onClick={() => shiftWeek(1)}  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-brand-600 hover:bg-brand-50 press"><Icons.ChevronRight size={16} /></button>
+                <button onClick={() => setWeekStart(data.today)} className="px-2.5 py-1 text-xs font-semibold rounded-lg text-brand-600 hover:bg-brand-50 press">今日</button>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <Select value={filterStaff} onChange={setFilterStaff} options={[{ value: 'all', label: 'スタッフ(全員)' }, ...data.staff.map((s) => ({ value: s.id, label: s.name }))]} />
-            <Select value={filterChannel} onChange={setFilterChannel} options={[{ value: 'all', label: 'チャネル(全て)' }, ...data.channels.map((c) => ({ value: c, label: c }))]} />
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select value={filterStaff}   onChange={setFilterStaff}
+              options={[{ value: 'all', label: 'スタッフ(全員)' }, ...data.staff.map((s) => ({ value: s.id, label: s.name }))]} />
+            <Select value={filterChannel} onChange={setFilterChannel}
+              options={[{ value: 'all', label: 'チャネル(全て)' }, ...data.channels.map((c) => ({ value: c, label: c }))]} />
             <Button icon={<Icons.Plus size={16} />} onClick={openNew}>新規予約</Button>
           </div>
         </div>
 
         {view === 'week' && (
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden" title="週間カレンダー" actions={
+            <div className="flex items-center gap-3 text-xs">
+              {data.staff.map((s) => (
+                <div key={s.id} className="flex items-center gap-1.5 text-slate-600">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: s.color }} />
+                  {s.name.split(' ')[0]}
+                </div>
+              ))}
+            </div>
+          }>
             <div className="overflow-x-auto">
-              <div className="cal-grid text-xs min-w-[900px]">
-                <div className="p-2 bg-slate-50"></div>
+              <div className="cal-grid text-xs min-w-[980px]">
+                <div className="p-2 bg-slate-50/60"></div>
                 {days.map((d) => {
                   const date = new Date(d);
                   const dow = ['日', '月', '火', '水', '木', '金', '土'][date.getDay()];
                   const isToday = d === data.today;
+                  const weekend = date.getDay() === 0 || date.getDay() === 6;
                   return (
-                    <div key={d} className={`p-2 bg-slate-50 text-center ${isToday ? 'text-brand-600 font-bold' : 'text-slate-600'}`}>
-                      <div className="text-[11px]">{dow}</div>
-                      <div className="text-sm">{date.getMonth() + 1}/{date.getDate()}</div>
+                    <div key={d} className={`p-2.5 text-center border-b border-slate-100 ${isToday ? 'bg-brand-50/60' : 'bg-slate-50/40'}`}>
+                      <div className={`text-[10px] font-semibold ${isToday ? 'text-brand-600' : weekend ? 'text-rose-500' : 'text-slate-500'}`}>{dow}</div>
+                      <div className={`text-sm font-bold mt-0.5 ${isToday ? 'text-brand-600' : 'text-slate-800'}`}>
+                        {date.getMonth() + 1}/{date.getDate()}
+                      </div>
+                      {isToday && <div className="mt-1 inline-block w-1 h-1 rounded-full bg-brand-500 glow-pulse" />}
                     </div>
                   );
                 })}
                 {HOURS.map((h) => (
                   <React.Fragment key={h}>
-                    <div className="p-2 bg-slate-50 text-[11px] text-slate-400 text-right pr-3">{h}:00</div>
+                    <div className="p-2 bg-slate-50/40 text-[11px] text-slate-400 text-right pr-3 border-b border-slate-100">{h}:00</div>
                     {days.map((d) => (
-                      <div key={d + h} className="cal-cell relative" onClick={() => { setEditing({ date: d, start: `${h}:00`, end: `${h + 1}:00` }); setModalOpen(true); }}>
+                      <div key={d + h} className="cal-cell"
+                           onClick={() => { setEditing({ date: d, start: `${h}:00`, end: `${h + 1}:00` }); setModalOpen(true); }}>
                         {filtered.filter((r) => r.date === d && parseInt(r.start) === h).map((r) => {
                           const c = data.customers.find((x) => x.id === r.customerId);
                           const s = data.staff.find((x) => x.id === r.staffId);
                           return (
                             <div key={r.id}
                                  onClick={(e) => { e.stopPropagation(); openEdit(r); }}
-                                 style={{ borderLeftColor: s?.color }}
-                                 className="absolute inset-x-1 top-1 bottom-1 border-l-4 bg-white shadow-sm rounded-md p-1.5 cursor-pointer hover:shadow-md">
-                              <div className="text-[11px] font-semibold truncate">{c?.name}</div>
-                              <div className="text-[10px] text-slate-500 truncate">{s?.avatar} {r.start}-{r.end}</div>
+                                 style={{ borderLeft: `3px solid ${s?.color}`, background: `linear-gradient(90deg, ${s?.color}18, #ffffff)` }}
+                                 className="cal-event">
+                              <div className="flex items-center justify-between">
+                                <div className="text-[11px] font-semibold text-slate-800 truncate">{c?.name}</div>
+                                <span className="text-[9px]" style={{ color: s?.color }}>●</span>
+                              </div>
+                              <div className="text-[10px] text-slate-500 truncate mt-0.5">{r.start}-{r.end}</div>
                             </div>
                           );
                         })}
@@ -123,10 +147,10 @@ window.NUAE = window.NUAE || {};
         )}
 
         {view === 'list' && (
-          <Card>
+          <Card title={`${filtered.length}件の予約`}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                <thead className="bg-slate-50/60 text-slate-500 text-[11px] uppercase tracking-wider">
                   <tr>
                     <th className="text-left px-4 py-3">日時</th>
                     <th className="text-left px-4 py-3">顧客</th>
@@ -138,21 +162,32 @@ window.NUAE = window.NUAE || {};
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100/70 stagger-children">
                   {filtered.sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)).map((r) => {
                     const c = data.customers.find((x) => x.id === r.customerId);
                     const s = data.staff.find((x) => x.id === r.staffId);
                     const m = r.menuIds.map((id) => data.menus.find((x) => x.id === id)?.name).join('、');
                     return (
-                      <tr key={r.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3">{r.date}<br /><span className="text-xs text-slate-500">{r.start}-{r.end}</span></td>
-                        <td className="px-4 py-3">{c?.name}</td>
-                        <td className="px-4 py-3">{s?.avatar} {s?.name}</td>
-                        <td className="px-4 py-3 max-w-[250px] truncate">{m}</td>
-                        <td className="px-4 py-3"><Badge tone={r.channel === 'LINE' ? 'green' : 'violet'}>{r.channel}</Badge></td>
-                        <td className="px-4 py-3 text-right font-medium">¥{r.price.toLocaleString()}</td>
-                        <td className="px-4 py-3"><Badge tone={r.status === '完了' ? 'green' : r.status === 'キャンセル' ? 'rose' : 'brand'}>{r.status}</Badge></td>
-                        <td className="px-4 py-3"><button onClick={() => openEdit(r)} className="text-brand-500 hover:underline text-xs">編集</button></td>
+                      <tr key={r.id} className="hover:bg-brand-50/30 cursor-pointer transition-colors" onClick={() => openEdit(r)}>
+                        <td className="px-4 py-3">
+                          <div className="font-semibold text-slate-800">{r.date}</div>
+                          <div className="text-[11px] text-slate-500">{r.start} - {r.end}</div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-slate-800">{c?.name}</div>
+                          {c?.tags?.includes('VIP') && <Badge tone="amber">VIP</Badge>}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: s?.color + '22' }}>{s?.avatar}</span>
+                            <span className="text-sm">{s?.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 max-w-[250px] truncate text-slate-600">{m}</td>
+                        <td className="px-4 py-3"><Badge tone={r.channel === 'LINE' ? 'green' : 'violet'} dot>{r.channel}</Badge></td>
+                        <td className="px-4 py-3 text-right font-semibold">¥{r.price.toLocaleString()}</td>
+                        <td className="px-4 py-3"><Badge tone={statusTone(r.status)} dot live={r.status === '施術中'}>{r.status}</Badge></td>
+                        <td className="px-4 py-3"><button onClick={(e) => { e.stopPropagation(); openEdit(r); }} className="text-brand-500 hover:text-brand-700 text-xs font-semibold">編集 →</button></td>
                       </tr>
                     );
                   })}
@@ -182,14 +217,38 @@ window.NUAE = window.NUAE || {};
 
     if (!open) return null;
     const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+    const design = form.designId ? data.designs.find((d) => d.id === form.designId) : null;
 
     return (
-      <Modal open={open} onClose={onClose} title={editing?.id ? '予約を編集' : '新規予約'} size="lg">
+      <Modal open={open} onClose={onClose}
+        title={editing?.id ? '予約を編集' : '新規予約'}
+        subtitle={editing?.id ? `ID: ${editing.id}` : '空き枠から自動で時間が設定されます'}
+        size="lg"
+        footer={
+          <div className="flex justify-between items-center">
+            {editing?.id ? <Button variant="danger" icon={<Icons.Trash size={14} />} size="sm" onClick={() => onDelete(editing.id)}>削除</Button> : <div />}
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={onClose}>キャンセル</Button>
+              <Button onClick={() => onSave(form)} icon={<Icons.Check size={14} />}>保存</Button>
+            </div>
+          </div>
+        }
+      >
+        {design && (
+          <div className="mb-4 flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50/50">
+            <div className="w-14 h-14 rounded-xl shadow-sm shrink-0" style={{ background: design.image }} />
+            <div>
+              <div className="text-xs text-slate-500">選択中のデザイン</div>
+              <div className="font-semibold">{design.name}</div>
+              <div className="text-xs text-brand-600">¥{design.price.toLocaleString()}</div>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4">
           <Input label="日付" type="date" value={form.date} onChange={(v) => update('date', v)} />
           <div className="grid grid-cols-2 gap-2">
             <Input label="開始" type="time" value={form.start} onChange={(v) => update('start', v)} />
-            <Input label="終了" type="time" value={form.end} onChange={(v) => update('end', v)} />
+            <Input label="終了" type="time" value={form.end}   onChange={(v) => update('end', v)} />
           </div>
           <Select label="顧客" value={form.customerId} onChange={(v) => update('customerId', v)}
             options={data.customers.map((c) => ({ value: c.id, label: c.name }))} />
@@ -201,18 +260,11 @@ window.NUAE = window.NUAE || {};
           }} options={data.menus.map((m) => ({ value: m.id, label: `${m.name} (¥${m.price})` }))} />
           <Select label="デザイン" value={form.designId || ''} onChange={(v) => update('designId', v || null)}
             options={[{ value: '', label: '— 未選択 —' }, ...data.designs.map((d) => ({ value: d.id, label: d.name }))]} />
-          <Select label="チャネル" value={form.channel} onChange={(v) => update('channel', v)} options={data.channels} />
-          <Select label="ステータス" value={form.status} onChange={(v) => update('status', v)} options={data.status} />
-          <Input label="金額" type="number" value={form.price} onChange={(v) => update('price', parseInt(v) || 0)} />
+          <Select label="チャネル"   value={form.channel} onChange={(v) => update('channel', v)} options={data.channels} />
+          <Select label="ステータス" value={form.status}  onChange={(v) => update('status', v)}  options={data.status} />
+          <Input  label="金額" type="number" value={form.price} onChange={(v) => update('price', parseInt(v) || 0)} />
         </div>
         <Textarea label="メモ" value={form.note} onChange={(v) => update('note', v)} className="mt-4" />
-        <div className="flex justify-between items-center mt-6">
-          {editing?.id ? <Button variant="danger" icon={<Icons.Trash size={16} />} onClick={() => onDelete(editing.id)}>削除</Button> : <div />}
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={onClose}>キャンセル</Button>
-            <Button onClick={() => onSave(form)}>保存</Button>
-          </div>
-        </div>
       </Modal>
     );
   };
