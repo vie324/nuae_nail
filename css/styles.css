@@ -1,0 +1,86 @@
+/* Base overrides */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-image:
+    radial-gradient(at 20% 0%, rgba(254, 205, 216, 0.35) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(251, 159, 184, 0.25) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .25s;
+  border-radius: 9999px;
+}
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .25s;
+  border-radius: 50%;
+}
+.toggle input:checked + .toggle-slider {
+  background-color: #e94572;
+}
+.toggle input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.25s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Nail design card hover */
+.design-card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.design-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -8px rgba(233, 69, 114, 0.25);
+}
+
+/* Calendar grid */
+.cal-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, minmax(0, 1fr));
+}
+.cal-cell {
+  min-height: 56px;
+  border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+}
