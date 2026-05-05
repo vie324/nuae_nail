@@ -11,6 +11,7 @@
     "parse":         "tsx src/cli/parse.ts",
     "demo":          "tsx src/cli/parse.ts --all",
     "ingest":        "tsx src/cli/ingest.ts",
+    "scrape":        "tsx src/cli/scrape.ts",
     "test":          "vitest run",
     "test:watch":    "vitest",
     "typecheck":     "tsc --noEmit",
@@ -19,7 +20,8 @@
     "dev:api":       "tsx watch src/api/server.ts",
     "dev:worker":    "tsx watch src/queue/worker.ts",
     "start:api":     "tsx src/api/server.ts",
-    "start:worker":  "tsx src/queue/worker.ts"
+    "start:worker":  "tsx src/queue/worker.ts",
+    "browsers:install": "playwright install chromium"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
@@ -29,7 +31,8 @@
     "imapflow":      "^1.0.158",
     "ioredis":       "^5.3.2",
     "mailparser":    "^3.6.5",
-    "pg":            "^8.11.3"
+    "pg":            "^8.11.3",
+    "playwright":    "^1.42.1"
   },
   "devDependencies": {
     "@types/mailparser": "^3.4.4",

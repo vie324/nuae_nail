@@ -5,23 +5,20 @@
 import { Queue } from 'bullmq';
 import { getRedis } from './connection.ts';
 import type { ParsedReservation } from '../parsers/types.ts';
+import type { ScrapableSource } from '../scrapers/index.ts';
 
 export const QueueNames = {
-  mailIngest: 'mail-ingest'
+  mailIngest: 'mail-ingest',
+  scrape:     'scrape'
 } as const;
 
+// ─── mail-ingest ─────────────────────────────────────────────────────
 export interface MailIngestJob {
-  /** Output of parsers/index.ts:parseEmail. */
   reservation: ParsedReservation;
-  /** Optional metadata for debugging. */
-  meta?: {
-    receivedAt?: string;
-    imapUid?: number;
-  };
+  meta?: { receivedAt?: string; imapUid?: number };
 }
 
 let _mailIngest: Queue<MailIngestJob> | null = null;
-
 export function mailIngestQueue(): Queue<MailIngestJob> {
   if (_mailIngest) return _mailIngest;
   _mailIngest = new Queue<MailIngestJob>(QueueNames.mailIngest, {
@@ -34,4 +31,28 @@ export function mailIngestQueue(): Queue<MailIngestJob> {
     }
   });
   return _mailIngest;
+}
+
+// ─── scrape ──────────────────────────────────────────────────────────
+export interface ScrapeJob {
+  source: ScrapableSource;
+  /** 'manual' (sync button) | 'scheduled' (cron) | 'retry' */
+  reason: 'manual' | 'scheduled' | 'retry';
+  daysAhead?: number;
+}
+
+let _scrape: Queue<ScrapeJob> | null = null;
+export function scrapeQueue(): Queue<ScrapeJob> {
+  if (_scrape) return _scrape;
+  _scrape = new Queue<ScrapeJob>(QueueNames.scrape, {
+    connection: getRedis(),
+    defaultJobOptions: {
+      // Fewer attempts than mail because each attempt launches a browser.
+      attempts: 2,
+      backoff: { type: 'exponential', delay: 60_000 },
+      removeOnComplete: { count: 200, age: 60 * 60 * 24 * 3 },
+      removeOnFail:    { count: 500, age: 60 * 60 * 24 * 14 }
+    }
+  });
+  return _scrape;
 }

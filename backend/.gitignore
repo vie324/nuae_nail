@@ -7,3 +7,7 @@ dist/
 coverage/
 .vitest/
 storage-state-*.json
+.sessions/
+.playwright-mcp/
+test-results/
+playwright-report/

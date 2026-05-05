@@ -62,6 +62,28 @@ export const config = {
     user:     process.env.IMAP_USER     ?? null,
     password: process.env.IMAP_PASSWORD ?? null,
     mailbox:  optional('IMAP_MAILBOX', 'INBOX')
+  },
+
+  scrapers: {
+    /** Where to keep persisted Playwright session state. */
+    sessionDir: optional('SCRAPER_SESSION_DIR', './.sessions'),
+    /** Headless toggle - keep `false` while you're capturing selectors. */
+    headless:   bool('SCRAPER_HEADLESS', true),
+    /** Per-source credentials. Optional in config; required at runtime. */
+    minimo: {
+      user:     process.env.MINIMO_USER     ?? null,
+      password: process.env.MINIMO_PASSWORD ?? null
+    },
+    hpb: {
+      user:     process.env.SALONBOARD_USER     ?? null,
+      password: process.env.SALONBOARD_PASSWORD ?? null
+    }
+  },
+
+  /** Optional LINE Messaging API for re-auth notifications. */
+  line: {
+    accessToken: process.env.LINE_ACCESS_TOKEN ?? null,
+    ownerUserId: process.env.LINE_OWNER_USER_ID ?? null
   }
 } as const;
 

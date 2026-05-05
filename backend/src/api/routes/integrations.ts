@@ -6,6 +6,9 @@ import {
   recordSync
 } from '../../db/repositories/integrations.ts';
 import { listReservations } from '../../db/repositories/reservations.ts';
+import { scrapeQueue } from '../../queue/queues.ts';
+
+const SCRAPABLE = new Set(['minimo', 'hpb']);
 
 interface IdParam { id: string }
 interface ConnectBody { connected: boolean; accountId?: string; config?: Record<string, unknown> }
@@ -60,19 +63,30 @@ export async function integrationRoutes(app: FastifyInstance): Promise<void> {
   /**
    * POST /api/integrations/:id/sync — manual trigger.
    *
-   * In Phase 2 this just timestamps. In Phase 3 it will enqueue a
-   * scrape job (for hpb / minimo) into BullMQ.
+   * For scrapable platforms (minimo / hpb): enqueues a scrape job
+   * onto BullMQ and returns its id. The worker process must be running
+   * for the job to actually execute.
+   *
+   * For non-scrapable platforms (line / google / instagram): just
+   * records a sync timestamp.
    */
   app.post<{ Params: IdParam }>('/api/integrations/:id/sync', async (req, reply) => {
-    const row = await getIntegration(req.params.id);
+    const id = req.params.id;
+    const row = await getIntegration(id);
     if (!row) return reply.code(404).send({ error: 'not found' });
     if (!row.connected) return reply.code(400).send({ error: 'not connected' });
 
-    await recordSync(req.params.id, null);
-    return {
-      ok: true,
-      id: req.params.id,
-      note: 'sync timestamp recorded; scrape job will be enqueued in Phase 3'
-    };
+    if (SCRAPABLE.has(id)) {
+      const job = await scrapeQueue().add(
+        `manual-${id}`,
+        { source: id as 'minimo' | 'hpb', reason: 'manual' },
+        { jobId: `manual-${id}-${Date.now()}` }
+      );
+      req.log.info({ id, jobId: job.id }, 'scrape job enqueued');
+      return { ok: true, id, jobId: job.id, mode: 'enqueued' };
+    }
+
+    await recordSync(id, null);
+    return { ok: true, id, mode: 'timestamped' };
   });
 }
