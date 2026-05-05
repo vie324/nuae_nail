@@ -6,38 +6,93 @@ minimo / Hot Pepper Beauty (HPB) からの予約をダッシュボードに取�
 
 | Phase | 内容 | 状態 |
 |---|---|---|
-| **2** | メールパーサー & IMAP watcher | ✅ 実装済み |
-| **1** | 永続化レイヤ (Postgres + BullMQ + REST API) | 🚧 次の実装 |
-| **3** | Playwright スクレイパー (HPB / minimo) | ⏳ 後続 |
+| **2** | メールパーサー & IMAP watcher | ✅ |
+| **1** | Postgres + BullMQ + Fastify API | ✅ |
+| **3** | Playwright スクレイパー | ⏳ 次 |
 
 ---
 
-## 5 分で動かす（Phase 2 デモ）
+## 構成図
+
+```
+┌─────────────────────┐
+│  IMAP inbox (Gmail) │       (新規通知メール)
+└──────────┬──────────┘
+           │ IDLE
+┌──────────▼──────────┐    enqueue
+│  watcher.ts         │ ───────────┐
+│  (parse + push)     │            │
+└─────────────────────┘            ▼
+                                ┌────────────────┐
+                                │ BullMQ queue   │
+                                │ "mail-ingest"  │
+                                └───────┬────────┘
+                                        │ process
+                                ┌───────▼────────┐
+                                │ worker.ts      │
+                                │ → upsert DB    │
+                                └───────┬────────┘
+                                        ▼
+                                ┌────────────────┐         ┌────────────────┐
+                                │  Postgres      │ ◀───── │  Fastify API   │
+                                │ external_      │  query │  (REST)        │
+                                │  reservations  │         │  CORS open     │
+                                └────────────────┘         └───────┬────────┘
+                                                                   │ fetch
+                                                          ┌────────▼────────┐
+                                                          │ Frontend        │
+                                                          │ (React static)  │
+                                                          └─────────────────┘
+```
+
+---
+
+## 5分でフルスタックを動かす
 
 ```bash
 cd backend
+cp .env.example .env       # 既定値で動きます。IMAP_PASSWORD は空でOK
+
+docker compose up -d       # Postgres + Redis を起動
 npm install
-npm test                              # ユニットテスト (vitest)
-npm run demo                          # 全フィクスチャをパース
-npm run parse src/fixtures/minimo-new.txt   # 単発実行
+npm run db:migrate         # スキーマ適用
+
+# サンプル予約を直接DBに入れる（IMAP不要のスモークテスト）
+npm run ingest src/fixtures/minimo-new.txt src/fixtures/hpb-new.txt
+
+# API + worker を別ターミナルで起動
+npm run dev:api            # → http://localhost:4000
+npm run dev:worker
+
+# 確認
+curl http://localhost:4000/api/reservations | jq
+curl http://localhost:4000/api/integrations  | jq
 ```
 
-実行例:
+### フロントエンドを実APIに接続
 
+ブラウザで `index.html` を開き、DevTools コンソールで:
+
+```js
+localStorage.setItem('nuae:apiBase', 'http://localhost:4000');
+location.reload();
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📩  minimo-new.txt  [source=minimo]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  source       minimo
-  status       new
-  externalId   M9876543
-  customer     山田 花子 (09011112222)
-  startAt      2026-04-24T01:00:00.000Z
-  endAt        2026-04-24T02:30:00.000Z
-  menu         ジェルネイル(ワンカラー)
-  staff        田中 美咲
-  amount       ¥6,600
+
+`/integrations` ページのヘッダに「API: http://localhost:4000」バッジが緑で表示されたら成功。
+モックに戻すときは `localStorage.removeItem('nuae:apiBase')` → reload。
+
+### IMAP も繋ぐ（実メール取り込み）
+
+```bash
+# .env を編集
+IMAP_HOST=imap.gmail.com
+IMAP_USER=salon-inbox@nuae.jp
+IMAP_PASSWORD=xxxx_xxxx_xxxx_xxxx     # Gmailアプリパスワード
+
+npm run imap:watch
 ```
+
+直近24hのメールを取り込み、その後はIDLE待機します。
 
 ---
 
@@ -45,102 +100,106 @@ npm run parse src/fixtures/minimo-new.txt   # 単発実行
 
 ```
 backend/
+├── docker-compose.yml          ← Postgres + Redis (local dev)
 ├── package.json
 ├── tsconfig.json
 ├── .env.example
 └── src/
-    ├── parsers/           ← メールパーサー本体
-    │   ├── types.ts         ParsedReservation 型定義
-    │   ├── normalize.ts     全角/日付/電話 等の正規化ヘルパ
-    │   ├── router.ts        どのプラットフォームからのメールか判定
-    │   ├── minimo.ts        minimo パーサー
-    │   ├── hotpepper.ts     HPB (サロンボード) パーサー
-    │   └── index.ts         上位の parseEmail() 1関数
-    ├── fixtures/          ← サンプルメール本文
-    │   ├── minimo-new.txt
-    │   ├── minimo-modify.txt
-    │   ├── minimo-cancel.txt
-    │   ├── hpb-new.txt
-    │   └── hpb-cancel.txt
-    ├── tests/             ← vitest テスト
-    │   ├── normalize.test.ts
-    │   ├── router.test.ts
-    │   ├── minimo.test.ts
-    │   └── hotpepper.test.ts
-    ├── imap/
-    │   └── watcher.ts       IMAP IDLE で新着を監視 → パーサーに流す
+    ├── config.ts               ← 環境変数の単一ソース
+    ├── lib/logger.ts           ← pino
+    ├── parsers/                ← Phase 2
+    │   ├── types.ts
+    │   ├── normalize.ts
+    │   ├── router.ts
+    │   ├── minimo.ts
+    │   ├── hotpepper.ts
+    │   └── index.ts
+    ├── fixtures/               ← サンプルメール
+    ├── tests/                  ← vitest 21テスト (全green)
+    ├── db/
+    │   ├── client.ts           ← pg pool
+    │   ├── migrate.ts          ← マイグレーションランナー
+    │   ├── migrations/001_init.sql
+    │   └── repositories/
+    │       ├── reservations.ts ← UPSERT(source, external_id)
+    │       ├── integrations.ts
+    │       └── failed.ts
+    ├── queue/
+    │   ├── connection.ts       ← ioredis
+    │   ├── queues.ts           ← BullMQ "mail-ingest"
+    │   ├── worker.ts           ← ワーカープロセスエントリ
+    │   └── jobs/mail-ingest.ts ← processor
+    ├── api/
+    │   ├── server.ts           ← Fastify エントリ
+    │   └── routes/
+    │       ├── health.ts       ← /health, /health/ready
+    │       ├── reservations.ts ← /api/reservations[/stats]
+    │       └── integrations.ts ← /api/integrations[/:id][/connection|/sync]
+    ├── imap/watcher.ts         ← IMAP IDLE → BullMQ
     └── cli/
-        └── parse.ts         デモ用 CLI
+        ├── parse.ts            ← フィクスチャをコンソール出力
+        └── ingest.ts           ← フィクスチャを実DBに INSERT
 ```
 
 ---
 
-## 実メールが届くまでの運用
+## REST API
 
-### 1. 受信箱の準備
+| Method | Path | 用途 |
+|---|---|---|
+| GET   | `/health`                                 | ライブネス |
+| GET   | `/health/ready`                           | DB ping 含む |
+| GET   | `/api/reservations`                       | 予約一覧 (filters: from, to, source, status, limit) |
+| GET   | `/api/reservations/stats`                 | ステータス別件数 |
+| GET   | `/api/integrations`                       | 全プラットフォーム連携状況 |
+| GET   | `/api/integrations/:id`                   | 1件 |
+| PATCH | `/api/integrations/:id/connection`        | 接続/切断 (`{connected, accountId?, config?}`) |
+| POST  | `/api/integrations/:id/sync`              | 手動同期トリガ (Phase 3 でスクレイプ起動) |
 
-サロンが minimo / HPB から通知を受け取る Gmail アドレスをひとつ用意します（既存でも可）。
-推奨は専用アドレスを切ること（例: `reservations@nuae.jp`）。
-2段階認証 + アプリパスワードを発行して `.env` に設定します。
+---
 
-### 2. 接続テスト
+## DBスキーマ要点
+
+```sql
+external_reservations (
+  source, external_id,                    -- UNIQUE 複合キー
+  status: 'new' | 'modified' | 'cancelled',
+  customer_*, start_at, end_at, menu_text, staff_text, amount,
+  raw_text, warnings (jsonb),
+  ingested_at, updated_at
+)
+
+integration_status ( id PK, connected, last_sync_at, last_error, config jsonb )
+failed_messages   ( source, reason, raw_*, failed_at )
+schema_migrations ( version PK )
+```
+
+UPSERT は `(source, external_id)` 複合 UNIQUE を使い、`new → modified → cancelled`
+の各イベントを矛盾なく統合します。COALESCE で部分情報の上書きを防止。
+
+---
+
+## 運用コマンド
 
 ```bash
-cp .env.example .env
-# IMAP_HOST / IMAP_USER / IMAP_PASSWORD を編集
-
-npm run imap:watch
+npm run db:migrate     # マイグレーション
+npm run dev:api        # API サーバ (auto-reload)
+npm run dev:worker     # ワーカー (auto-reload)
+npm run start:api      # 本番モード
+npm run start:worker
+npm run imap:watch     # IMAP 監視 → キュー投入
+npm run ingest <file>  # フィクスチャを直接DBに入れる (IMAP不要)
+npm run parse <file>   # コンソールにパース結果を表示 (DB不要)
+npm run demo           # 全フィクスチャをパース表示
+npm test               # vitest
+npm run typecheck      # tsc --noEmit
 ```
 
-直近 24h のメールを catch-up し、続いて IDLE で待機します。
-受信があるたび stdout にパース結果が出力されるので、
-本物のメールでフィールドが取れているか確認してください。
-
-### 3. パーサー精度の調整
-
-実メールでフィールドが取れなかった場合:
-
-1. 受信したメールのソースをコピー
-2. 個人情報をマスクして `src/fixtures/{source}-real.txt` として保存
-3. `tests/{source}.test.ts` にケースを追加
-4. `src/parsers/{source}.ts` の正規表現を調整して green に
-
-`src/parsers/normalize.ts` の `parseJpDateTimeRange` は色々な日本語表記に対応していますが、
-新しいパターンが出たらここを拡張してください。
-
 ---
 
-## 設計メモ
+## 次の Phase 3 で追加するもの
 
-### なぜ「メールパース優先」なのか
-
-[詳細な議論はチャット履歴参照]
-
-要点:
-
-- ✅ 規約違反リスクが極小（自分宛のメールを読むだけ）
-- ✅ DOM 変更に強い（メールフォーマットは数年スパンで安定）
-- ✅ 認証が IMAP のみ、CAPTCHA / 2FA 突破不要
-- ✅ リアルタイム性が高い（IDLE で即時通知）
-- ⚠️ ステータス更新（自動キャンセル等）は取り逃しやすい → スクレイパーで補完
-
-### 冪等性
-
-`(source, external_id)` の複合 UNIQUE をDBに張り、UPSERT で重複防止。
-同じ予約に対して「new → modified → cancelled」が来ても矛盾なく更新できます。
-
-### 失敗ハンドリング
-
-- パースに失敗したメール (id が取れない等) は `[skip] reason=...` と stdout に出して通過
-- フィールドが部分的に取れた場合は `warnings: ['startAt could not be parsed']` 付きで通る
-- Phase 1 では failed_messages テーブルに保管 → 後追い解析
-
----
-
-## 次の Phase 1 で追加するもの
-
-- Postgres スキーマ (`external_reservations`, `customers_match` 等)
-- BullMQ ワーカー (mail-ingest / scrape-hpb / scrape-minimo)
-- Fastify + REST API (`/api/reservations`, `/api/integrations/sync`)
-- 既存ダッシュボード (`/integrations` 画面) を実DBに接続
-- Docker Compose (postgres + redis)
+- Playwright + stealth でサロンボード/minimo管理画面を週次/日次スクレイプ
+- 予約の双方向マージ（メール + スクレイプ） — 取り逃しゼロを目指す
+- スタッフへ「再ログイン要求」をLINE通知するフロー（セッション失効対応）
+- E2Eテスト（fastify.inject + ephemeral postgres）

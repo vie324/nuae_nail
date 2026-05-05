@@ -71,7 +71,7 @@ function processOne(filePath: string): void {
     ['amount',       parsed.amount != null ? `¥${parsed.amount.toLocaleString()}` : '-']
   ];
   for (const [k, v] of lines) {
-    console.log(`  ${k.padEnd(12)} ${v}`);
+    console.log(`  ${String(k ?? '').padEnd(12)} ${v ?? ''}`);
   }
   if (parsed.warnings.length) {
     console.log(`  ⚠ warnings:  ${parsed.warnings.join(', ')}`);

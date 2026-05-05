@@ -1,0 +1,45 @@
+version: '3.9'
+
+# Local dev stack for Nuae backend.
+# Usage:
+#   docker compose up -d
+#   npm run db:migrate
+#   npm run dev:api      # in one terminal
+#   npm run dev:worker   # in another
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nuae-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nuae
+      POSTGRES_PASSWORD: nuae
+      POSTGRES_DB: nuae_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - nuae_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nuae -d nuae_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: nuae-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - nuae_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  nuae_pg_data:
+  nuae_redis_data:

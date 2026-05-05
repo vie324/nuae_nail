@@ -15,24 +15,74 @@ window.NUAE = window.NUAE || {};
   };
 
   const Integrations = () => {
+    const api = window.NUAE.api;
+    const liveMode = api?.isLive() ?? false;
+
+    // Backend rows are missing the small icon/account presets; merge with mock data
+    // by id so the UI always has nice display data.
+    const mergeWithMock = (rows) =>
+      rows.map((r) => {
+        const mock = data.integrations.find((m) => m.id === r.id) || {};
+        return {
+          icon: mock.icon || '🔗',
+          ...mock,
+          ...r,
+          // Normalize: backend returns ISO; UI shows YYYY-MM-DD HH:mm
+          lastSync: r.lastSync ? new Date(r.lastSync).toISOString().slice(0, 16).replace('T', ' ') : '-'
+        };
+      });
+
     const [integrations, setIntegrations] = React.useState(data.integrations);
     const [selected, setSelected] = React.useState(null);
     const [connectModal, setConnectModal] = React.useState(null);
     const [pendingOpen, setPendingOpen] = React.useState(false);
     const [syncing, setSyncing] = React.useState(false);
+    const [loading, setLoading] = React.useState(liveMode);
     const toast = useToast();
 
-    const toggleConnect = (id) => {
+    React.useEffect(() => {
+      if (!liveMode) return;
+      setLoading(true);
+      api.integrations.list()
+        .then((res) => setIntegrations(mergeWithMock(res.data)))
+        .catch((err) => toast({ tone: 'error', title: 'API取得失敗', description: String(err.message || err) }))
+        .finally(() => setLoading(false));
+    }, []);
+
+    const toggleConnect = async (id) => {
+      if (liveMode) {
+        const target = integrations.find((i) => i.id === id);
+        const next = !target.connected;
+        try {
+          await api.integrations.setConnected(id, next);
+          setIntegrations(integrations.map((i) => i.id === id ? { ...i, connected: next } : i));
+        } catch (err) {
+          toast({ tone: 'error', title: '更新失敗', description: String(err.message || err) });
+        }
+        return;
+      }
+      // mock mode
       setIntegrations(integrations.map((i) => i.id === id ? { ...i, connected: !i.connected, lastSync: new Date().toISOString().slice(0, 16).replace('T', ' ') } : i));
     };
 
-    const syncAll = () => {
+    const syncAll = async () => {
       setSyncing(true);
-      setTimeout(() => {
-        setIntegrations(integrations.map((i) => i.connected ? { ...i, lastSync: new Date().toISOString().slice(0, 16).replace('T', ' ') } : i));
+      try {
+        if (liveMode) {
+          const targets = integrations.filter((i) => i.connected);
+          await Promise.all(targets.map((i) => api.integrations.sync(i.id).catch(() => null)));
+          const refreshed = await api.integrations.list();
+          setIntegrations(mergeWithMock(refreshed.data));
+        } else {
+          await new Promise((r) => setTimeout(r, 1400));
+          setIntegrations(integrations.map((i) => i.connected ? { ...i, lastSync: new Date().toISOString().slice(0, 16).replace('T', ' ') } : i));
+        }
+        toast({ tone: 'success', title: '全ての連携を同期しました' });
+      } catch (err) {
+        toast({ tone: 'error', title: '同期失敗', description: String(err.message || err) });
+      } finally {
         setSyncing(false);
-        toast({ tone: 'success', title: '全ての連携を同期しました', description: '新着 ' + integrations.reduce((s, i) => s + i.newReservations, 0) + '件' });
-      }, 1400);
+      }
     };
 
     const newTotal   = integrations.reduce((s, i) => s + i.newReservations, 0);
@@ -45,7 +95,13 @@ window.NUAE = window.NUAE || {};
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full aurora-bg opacity-20 blur-3xl" />
           <div className="relative flex items-start justify-between flex-wrap gap-2">
             <div>
-              <h2 className="text-lg font-bold">外部予約サイト連携</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-bold">外部予約サイト連携</h2>
+                {liveMode
+                  ? <Badge tone="green" dot live>API: {api.getBase()}</Badge>
+                  : <Badge tone="slate">モックモード</Badge>}
+                {loading && <Badge tone="amber" dot live>読み込み中</Badge>}
+              </div>
               <p className="text-sm text-slate-500 mt-1">minimo / ネイリー / ホットペッパー等の予約を自動で取り込み、ダブルブッキングを防止します。</p>
             </div>
             <div className="flex gap-2">
